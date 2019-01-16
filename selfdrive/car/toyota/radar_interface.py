@@ -7,14 +7,17 @@ from cereal import car
 from common.realtime import sec_since_boot
 from selfdrive.services import service_list
 import selfdrive.messaging as messaging
-from selfdrive.car.toyota.values import NO_DSU_CAR
+from selfdrive.car.toyota.values import NO_DSU_CAR, TSSP_2
 
 
 RADAR_A_MSGS = list(range(0x210, 0x220))
 RADAR_B_MSGS = list(range(0x220, 0x230))
 
 def _create_radard_can_parser():
-  dbc_f = 'toyota_prius_2017_adas.dbc'
+  if CP.carFingerprint in TSSP_2:
+      dbc_f = 'toyota_rav4_2019_adas.dbc'
+  else:
+      dbc_f = 'toyota_prius_2017_adas.dbc'
 
   msg_a_n = len(RADAR_A_MSGS)
   msg_b_n = len(RADAR_B_MSGS)
