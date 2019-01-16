@@ -141,7 +141,7 @@ class CarInterface(object):
       ret.steerKpV, ret.steerKiV = [[0.6], [0.05]]
       ret.steerKf = 0.00006
 
-  elif candidate == CAR.RAV4_2019:
+    elif candidate == CAR.RAV4_2019:
       ret.safetyParam = 100
       ret.wheelbase = 2.68986
       ret.steerRatio = 14.3
