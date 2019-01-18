@@ -10,11 +10,11 @@ import selfdrive.messaging as messaging
 from selfdrive.car.toyota.values import NO_DSU_CAR
 
 
-RADAR_A_MSGS = list(range(0x210, 0x220))
-RADAR_B_MSGS = list(range(0x220, 0x230))
+RADAR_A_MSGS = list(range(0x180, 0x190))
+RADAR_B_MSGS = list(range(0x190, 0x19f))
 
 def _create_radard_can_parser():
-  dbc_f = 'toyota_prius_2017_adas.dbc'
+  dbc_f = 'toyota_rav4_2019_adas.dbc'
 
   msg_a_n = len(RADAR_A_MSGS)
   msg_b_n = len(RADAR_B_MSGS)
