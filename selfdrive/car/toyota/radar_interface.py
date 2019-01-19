@@ -11,7 +11,7 @@ from selfdrive.car.toyota.values import NO_DSU_CAR
 
 
 RADAR_A_MSGS = list(range(0x180, 0x190))
-RADAR_B_MSGS = list(range(0x190, 0x19f))
+RADAR_B_MSGS = list(range(0x190, 0x1a0))
 
 def _create_radard_can_parser():
   dbc_f = 'toyota_rav4_2019_adas.dbc'
