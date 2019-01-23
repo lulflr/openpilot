@@ -71,6 +71,10 @@ class CarInterface(object):
 
     ret.steerActuatorDelay = 0.1  # Default delay
     tire_stiffness_factor = 1.
+    ret.steerReactance = 0.7
+    ret.steerInductance = 1.0
+    ret.steerResistance = 1.0
+    ret.eonToFront = 0.5
 
     if candidate == CAR.SANTA_FE:
       ret.steerKf = 0.00005
@@ -196,7 +200,7 @@ class CarInterface(object):
       ret.gearShifter = self.CS.gear_shifter_cluster
     else:
       ret.gearShifter = self.CS.gear_shifter
-    
+
     ret.gasbuttonstatus = self.CS.cstm_btns.get_button_status("gas")
     ret.readdistancelines = self.CS.read_distance_lines
     # gas pedal

@@ -29,7 +29,7 @@ def gps_distance(gpsLat, gpsLon, gpsAlt, gpsAcc):
   includeradius = B[minindex,5]
   approachradius = B[minindex,6]
   speedlimit = float(B[minindex,7])
-  
+
   if abs(gpsAlt -B[minindex,3]) < altacc:
     if gpsAcc<1.00001:
       #dist = 6371010*acos(sin(radians(gpsLat))*sin(radians(lat))+cos(radians(gpsLat))*cos(radians(lat))*cos(radians(gpsLon-lon)))
@@ -109,7 +109,7 @@ def get_can_parser(CP):
   if CP.enableGasInterceptor:
     signals.append(("INTERCEPTOR_GAS", "GAS_SENSOR", 0))
     checks.append(("GAS_SENSOR", 50))
-    
+
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
 
 
@@ -148,19 +148,19 @@ class CarState(object):
     self.CL_LANE_DETECT_BP = [10., 44.]
     self.CL_LANE_DETECT_FACTOR = [1.3, 1.3]
     self.CL_LANE_PASS_BP = [10., 20., 44.]
-    self.CL_LANE_PASS_TIME = [40.,10., 3.] 
+    self.CL_LANE_PASS_TIME = [40.,10., 3.]
      # change lane delta angles and other params
     self.CL_MAXD_BP = [10., 32., 44.]
     self.CL_MAXD_A = [.358, 0.084, 0.042] #delta angle based on speed; needs fine tune, based on Tesla steer ratio of 16.75
     self.CL_MIN_V = 8.9 # do not turn if speed less than x m/2; 20 mph = 8.9 m/s
      # do not turn if actuator wants more than x deg for going straight; this should be interp based on speed
     self.CL_MAX_A_BP = [10., 44.]
-    self.CL_MAX_A = [10., 10.] 
+    self.CL_MAX_A = [10., 10.]
      # define limits for angle change every 0.1 s
     # we need to force correction above 10 deg but less than 20
     # anything more means we are going to steep or not enough in a turn
     self.CL_MAX_ACTUATOR_DELTA = 2.
-    self.CL_MIN_ACTUATOR_DELTA = 0. 
+    self.CL_MIN_ACTUATOR_DELTA = 0.
     self.CL_CORRECTION_FACTOR = [1.3,1.2,1.2]
     self.CL_CORRECTION_FACTOR_BP = [10., 32., 44.]
      #duration after we cross the line until we release is a factor of speed
@@ -169,7 +169,7 @@ class CarState(object):
     #duration to wait (in seconds) with blinkers on before starting to turn
     self.CL_WAIT_BEFORE_START = 1
     #END OF ALCA PARAMS
-    
+
     context = zmq.Context()
     self.poller = zmq.Poller()
     self.lastlat_Control = None
@@ -254,7 +254,7 @@ class CarState(object):
         msg = messaging.recv_one(socket)
       elif socket is self.lat_Control:
         self.lastlat_Control = messaging.recv_one(socket).latControl
-    
+
     if msg is not None:
       gps_pkt = msg.gpsLocationExternal
       self.inaccuracy = gps_pkt.accuracy
@@ -299,8 +299,12 @@ class CarState(object):
     #self.standstill = not self.v_wheel > 0.001
     self.standstill = False
 
+    # Only use the reported steer rate from some Toyotas, since others are very noisy
+    if self.CP.carFingerprint in (CAR.RAV4, CAR.RAV4H, CAR.COROLLA):
+      self.angle_steers_rate = cp.vl["STEER_ANGLE_SENSOR"]['STEER_RATE']
+    else:
+      self.angle_steers_rate = 0.0
     self.angle_steers = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
-    self.angle_steers_rate = cp.vl["STEER_ANGLE_SENSOR"]['STEER_RATE']
     can_gear = int(cp.vl["GEAR_PACKET"]['GEAR'])
     self.gear_shifter = parse_gear_shifter(can_gear, self.shifter_values)
     self.main_on = cp.vl["PCM_CRUISE_2"]['MAIN_ON']
@@ -318,7 +322,7 @@ class CarState(object):
       self.blind_spot_on = bool(1)
     else:
       self.blind_spot_on = bool(0)
-    
+
     # we could use the override bit from dbc, but it's triggered at too high torque values
     self.steer_override = abs(cp.vl["STEER_TORQUE_SENSOR"]['STEER_TORQUE_DRIVER']) > 100
 
@@ -341,7 +345,7 @@ class CarState(object):
         self.lane_departure_toggle_on = False
       else:
         self.lane_departure_toggle_on = True
-      
+
     self.distance_toggle = cp.vl["JOEL_ID"]['ACC_DISTANCE']
     self.read_distance_lines = cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES']
     if self.distance_toggle <> self.distance_toggle_prev:
@@ -358,7 +362,7 @@ class CarState(object):
       if self.read_distance_lines == 3:
         self.UE.custom_alert_message(2,"Following distance set to 2.7s",200,3)
       self.read_distance_lines_prev = self.read_distance_lines
-    
+
     if bool(cp.vl["JOEL_ID"]['ACC_SLOW']) <> self.acc_slow_on_prev:
       self.acc_slow_on = bool(cp.vl["JOEL_ID"]['ACC_SLOW'])
       if self.acc_slow_on:
@@ -399,7 +403,7 @@ class CarState(object):
       print "inside"
       if self.v_cruise_pcm > self.speedlimit:
         self.v_cruise_pcm =  self.speedlimit
-    
+
     self.pcm_acc_status = cp.vl["PCM_CRUISE"]['CRUISE_STATE']
     self.pcm_acc_active = bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE'])
     self.gas_pressed = not cp.vl["PCM_CRUISE"]['GAS_RELEASED']
@@ -409,4 +413,4 @@ class CarState(object):
       self.generic_toggle = cp.vl["AUTOPARK_STATUS"]['STATE'] != 0
     else:
       self.generic_toggle = bool(cp.vl["LIGHT_STALK"]['AUTO_HIGH_BEAM'])
-    
+

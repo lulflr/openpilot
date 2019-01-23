@@ -74,6 +74,10 @@ class CarInterface(object):
 
     ret.steerKiBP, ret.steerKpBP = [[0.], [0.]]
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
+    ret.steerReactance = 0.7
+    ret.steerInductance = 1.0
+    ret.steerResistance = 1.0
+    ret.eonToFront = 0.5
 
     if candidate == CAR.PRIUS:
       stop_and_go = True
@@ -82,6 +86,7 @@ class CarInterface(object):
       ret.steerRatio = 15.00   # unknown end-to-end spec
       tire_stiffness_factor = 1.0
       ret.mass = 3370 * CV.LB_TO_KG + std_cargo
+      ret.eonToFront = 0.0
       ret.steerKpV, ret.steerKiV = [[0.369,0.397,0.418], [0.0056,0.0093,0.0121]]
       ret.steerKf = 0.000078   # full torque for 10 deg at 80mph means 0.00007818594
       # TODO: Prius seem to have very laggy actuators. Understand if it is lag or hysteresis
@@ -232,12 +237,12 @@ class CarInterface(object):
 
     #detect the Pedal address
     ret.enableGasInterceptor = 0x201 in fingerprint
-    
-    
+
+
     # min speed to enable ACC. if car can do stop and go, then set enabling speed
     # to a negative value, so it won't matter.
     ret.minEnableSpeed = -1. if (stop_and_go or ret.enableGasInterceptor) else 19. * CV.MPH_TO_MS
-    
+
     centerToRear = ret.wheelbase - ret.centerToFront
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -280,7 +285,7 @@ class CarInterface(object):
 
     ret.longitudinalKpBP = [0., 5., 35.]
     ret.longitudinalKiBP = [0., 35.]
-    
+
     return ret
 
   # returns a car.CarState
@@ -376,7 +381,7 @@ class CarInterface(object):
     ret.accSlowToggle = self.CS.acc_slow_on
     ret.readdistancelines = self.CS.read_distance_lines
     ret.gasbuttonstatus = self.CS.cstm_btns.get_button_status("gas")
-    
+
     # events
     events = []
     if not self.CS.can_valid:
@@ -445,7 +450,7 @@ class CarInterface(object):
 
     self.CC.update(self.sendcan, c.enabled, self.CS, self.frame,
                    c.actuators, c.cruiseControl.cancel, c.hudControl.visualAlert,
-                   c.hudControl.audibleAlert, self.forwarding_camera, c.hudControl.leftLaneVisible, 
+                   c.hudControl.audibleAlert, self.forwarding_camera, c.hudControl.leftLaneVisible,
                    c.hudControl.rightLaneVisible, c.hudControl.leadVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
 
     self.frame += 1
