@@ -403,7 +403,7 @@ class Planner(object):
       self.last_model = cur_time
       self.model_dead = False
 
-      self.PP.update(CS.vEgo, md, LaC)
+      self.PP.update(CS.vEgo, md)
 
       if self.last_gps_planner_plan is not None:
         plan = self.last_gps_planner_plan.gpsPlannerPlan
@@ -454,7 +454,7 @@ class Planner(object):
         # TODO: make a separate lookup for jerk tuning
         jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]
         if self.lastlat_Control and CS.vEgo > 11:
-          angle_later = self.lastlat_Control.anglelater 
+          angle_later = self.lastlat_Control.anglelater
         else:
           angle_later = 0
         accel_limits = limit_accel_in_turns(CS.vEgo, CS.steeringAngle, accel_limits, self.CP, angle_later * self.CP.steerRatio)

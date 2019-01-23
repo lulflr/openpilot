@@ -63,6 +63,10 @@ class CarInterface(object):
     ret.carFingerprint = candidate
 
     ret.enableCruise = False
+    ret.steerReactance = 0.7
+    ret.steerInductance = 1.0
+    ret.steerResistance = 1.0
+    ret.eonToFront = 0.5
 
     # Presence of a camera on the object bus is ok.
     # Have to go passive if ASCM is online (ACC-enabled cars),

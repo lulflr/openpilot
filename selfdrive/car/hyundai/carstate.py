@@ -146,19 +146,19 @@ class CarState(object):
     self.CL_LANE_DETECT_BP = [10., 44.]
     self.CL_LANE_DETECT_FACTOR = [1.3, 1.3]
     self.CL_LANE_PASS_BP = [10., 20., 44.]
-    self.CL_LANE_PASS_TIME = [40.,10., 3.] 
+    self.CL_LANE_PASS_TIME = [40.,10., 3.]
      # change lane delta angles and other params
     self.CL_MAXD_BP = [10., 32., 44.]
     self.CL_MAXD_A = [.358, 0.084, 0.042] #delta angle based on speed; needs fine tune, based on Tesla steer ratio of 16.75
     self.CL_MIN_V = 8.9 # do not turn if speed less than x m/2; 20 mph = 8.9 m/s
      # do not turn if actuator wants more than x deg for going straight; this should be interp based on speed
     self.CL_MAX_A_BP = [10., 44.]
-    self.CL_MAX_A = [10., 10.] 
+    self.CL_MAX_A = [10., 10.]
      # define limits for angle change every 0.1 s
     # we need to force correction above 10 deg but less than 20
     # anything more means we are going to steep or not enough in a turn
     self.CL_MAX_ACTUATOR_DELTA = 2.
-    self.CL_MIN_ACTUATOR_DELTA = 0. 
+    self.CL_MIN_ACTUATOR_DELTA = 0.
     self.CL_CORRECTION_FACTOR = [1.3,1.2,1.2]
     self.CL_CORRECTION_FACTOR_BP = [10., 32., 44.]
      #duration after we cross the line until we release is a factor of speed
@@ -167,7 +167,7 @@ class CarState(object):
     #duration to wait (in seconds) with blinkers on before starting to turn
     self.CL_WAIT_BEFORE_START = 1
     #END OF ALCA PARAMS
-    
+
     self.CP = CP
 
     #BB UIEvents
@@ -181,13 +181,13 @@ class CarState(object):
 
     #BB custom message counter
     self.custom_alert_counter = 100 #set to 100 for 1 second display; carcontroller will take down to zero
-    
+
     # initialize can parser
     self.car_fingerprint = CP.carFingerprint
 
 
 
-    
+
     # vEgo kalman filter
     dt = 0.01
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
@@ -228,7 +228,7 @@ class CarState(object):
     else:
         self.cstm_btns.btns[id].btn_status = btn_status
 
-    
+
   def update(self, cp, cp_cam):
     # copy can_valid
     self.can_valid = cp.can_valid
@@ -271,7 +271,7 @@ class CarState(object):
     self.standstill = not self.v_wheel > 0.1
 
     self.angle_steers = cp.vl["SAS11"]['SAS_Angle']
-    self.angle_steers_rate = cp.vl["SAS11"]['SAS_Speed']
+    self.angle_steers_rate = 0.0  # cp.vl["SAS11"]['SAS_Speed']
     self.yaw_rate = cp.vl["ESP12"]['YAW_RATE']
     self.main_on = True
     self.left_blinker_on = cp.vl["CGW1"]['CF_Gway_TSigLHSw']
