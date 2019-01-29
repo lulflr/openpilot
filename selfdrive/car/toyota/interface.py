@@ -149,7 +149,7 @@ class CarInterface(object):
       ret.steerKf = 0.00006
 
     elif candidate == CAR.RAV4_2019:
-        stop_and_go = True
+      stop_and_go = True
       ret.safetyParam = 100
       ret.wheelbase = 2.68986
       ret.steerRatio = 14.3
