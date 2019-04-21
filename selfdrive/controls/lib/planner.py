@@ -234,7 +234,7 @@ class Planner(object):
     fcw = self.fcw_checker.update(self.mpc1.mpc_solution, cur_time, v_ego, CS.carState.aEgo,
                                   lead_1.dRel, lead_1.vLead, lead_1.aLeadK,
                                   lead_1.yRel, lead_1.vLat,
-                                  lead_1.fcw, blinkers) and not CS.carState.brakePressed
+                                  lead_1.fcw, blinkers)
     if fcw:
       cloudlog.info("FCW triggered %s", self.fcw_checker.counters)
 
