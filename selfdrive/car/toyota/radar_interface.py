@@ -41,8 +41,8 @@ class RadarInterface(object):
     if CP.carFingerprint in TSSP2_CAR:
       global RADAR_A_MSGS
       global RADAR_B_MSGS
-      RADAR_A_MSGS = list(range(0x190, 0x1a0))
-      RADAR_B_MSGS = list(range(0x180, 0x190))
+      RADAR_A_MSGS = list(range(0x180, 0x190))
+      RADAR_B_MSGS = list(range(0x190, 0x1a0))
 
     self.rcp = _create_radard_can_parser(CP.carFingerprint)
     self.no_dsu_car = CP.carFingerprint in NO_DSU_CAR
