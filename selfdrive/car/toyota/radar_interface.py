@@ -7,14 +7,14 @@ from cereal import car
 from common.realtime import sec_since_boot
 from selfdrive.services import service_list
 import selfdrive.messaging as messaging
-from selfdrive.car.toyota.values import NO_DSU_CAR
+from selfdrive.car.toyota.values import NO_DSU_CAR, DBC, CAR
 
 
-RADAR_A_MSGS = list(range(0x180, 0x190))
-RADAR_B_MSGS = list(range(0x190, 0x1a0))
+RADAR_A_MSGS = list(range(0x210, 0x220))
+RADAR_B_MSGS = list(range(0x220, 0x230))
 
-def _create_radard_can_parser():
-  dbc_f = 'toyota_rav4_2019_adas.dbc'
+def _create_radard_can_parser(car_fingerprint):
+  dbc_f = DBC[car_fingerprint]['radar']
 
   msg_a_n = len(RADAR_A_MSGS)
   msg_b_n = len(RADAR_B_MSGS)
@@ -38,7 +38,11 @@ class RadarInterface(object):
 
     self.delay = 0.0  # Delay of radar
 
-    self.rcp = _create_radard_can_parser()
+    if CP.carFingerprint in TSSP2_CAR:
+        global RADAR_A_MSGS = list(range(0x180, 0x190))
+        global RADAR_B_MSGS = list(range(0x190, 0x1a0))
+
+    self.rcp = _create_radard_can_parser(CP.carFingerprint)
     self.no_dsu_car = CP.carFingerprint in NO_DSU_CAR
 
     context = zmq.Context()
@@ -47,6 +51,7 @@ class RadarInterface(object):
   def update(self):
 
     ret = car.RadarState.new_message()
+
     if self.no_dsu_car:
       # TODO: make a adas dbc file for dsu-less models
       time.sleep(0.05)
