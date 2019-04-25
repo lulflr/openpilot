@@ -7,7 +7,7 @@ from cereal import car
 from common.realtime import sec_since_boot
 from selfdrive.services import service_list
 import selfdrive.messaging as messaging
-from selfdrive.car.toyota.values import NO_DSU_CAR, DBC, CAR
+from selfdrive.car.toyota.values import NO_DSU_CAR, DBC, CAR, TSSP2_CAR
 
 
 RADAR_A_MSGS = list(range(0x210, 0x220))
@@ -39,8 +39,10 @@ class RadarInterface(object):
     self.delay = 0.0  # Delay of radar
 
     if CP.carFingerprint in TSSP2_CAR:
-        global RADAR_A_MSGS = list(range(0x180, 0x190))
-        global RADAR_B_MSGS = list(range(0x190, 0x1a0))
+      global RADAR_A_MSGS
+      global RADAR_B_MSGS
+      RADAR_A_MSGS = list(range(0x190, 0x1a0))
+      RADAR_B_MSGS = list(range(0x180, 0x190))
 
     self.rcp = _create_radard_can_parser(CP.carFingerprint)
     self.no_dsu_car = CP.carFingerprint in NO_DSU_CAR
