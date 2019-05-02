@@ -174,7 +174,10 @@ class LongitudinalMpc(object):
       if self.dyn_time >= self.last_ttc or self.last_ttc is None:
         self.last_ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * 100.0  # to frames
         self.dyn_time = 0
-      curr_TR = self.relative_distance / v_ego
+      if v_ego != 0:
+        curr_TR = self.relative_distance / v_ego
+      else:
+        curr_TR = des_TR
       x = [0, self.last_ttc / 2.0]
       y = [curr_TR, des_TR]
       dyn_TR = np.interp(self.dyn_time, x, y)
