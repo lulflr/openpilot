@@ -9,7 +9,7 @@ from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from scipy import interpolate
 import math
 import json
-
+import time
 
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
@@ -82,7 +82,9 @@ class LongitudinalMpc(object):
       return 0.9  # 10m at 40km/hr
 
     if read_distance_lines == 2:
-      self.save_car_data(v_ego)
+      with open("/data/long_times.txt", "a") as f:
+        f.write(str(time.time())+"\n")
+      #self.save_car_data(v_ego)
       generatedTR = self.dyn_fol_exp(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
 
@@ -178,7 +180,7 @@ class LongitudinalMpc(object):
         curr_TR = self.relative_distance / v_ego
       else:
         curr_TR = des_TR
-      x = [0, self.last_ttc / 2.0]
+      x = [0, self.last_ttc / 4.0]
       y = [curr_TR, des_TR]
       dyn_TR = np.interp(self.dyn_time, x, y)
       self.dyn_time += 1
