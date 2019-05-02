@@ -32,6 +32,8 @@ class LongitudinalMpc(object):
     self.relative_velocity = None
     self.relative_distance = None
     self.stop_and_go = False
+    self.dyn_time = 0
+    self.last_ttc = None
 
   def save_car_data(self, self_vel):
     if len(self.dynamic_follow_dict["self_vels"]) >= 200:  # 100hz, so 200 items is 2 seconds
@@ -159,6 +161,29 @@ class LongitudinalMpc(object):
         a = (velocity_list[-1] - velocity_list[0]) / (len(velocity_list) / 100.0)
 
     return a
+
+  def calc_ttc(self, v_ego, v_lead, d_rel):
+    v_rel = v_ego - v_lead
+    if v_rel == 0:
+        return None
+    return d_rel / float(v_rel)
+
+  def dyn_fol_exp(self, v_ego):
+    des_TR = 1.6
+    if self.relative_velocity < 0 and self.relative_velocity is not None:
+      if self.dyn_time >= self.last_ttc or self.last_ttc is None:
+        self.last_ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * 100.0  # to frames
+        self.dyn_time = 0
+      curr_TR = self.relative_distance / v_ego
+      x = [0, self.last_ttc / 2.0]
+      y = [curr_TR, des_TR]
+      dyn_TR = np.interp(self.dyn_time, x, y)
+      self.dyn_time += 1
+      return dyn_TR
+    else:
+      self.dyn_time = 0
+      self.last_ttc = None
+      return des_TR
 
   def dynamic_follow(self, velocity):  # in m/s
     x_vel = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
