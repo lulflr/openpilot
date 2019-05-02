@@ -83,7 +83,7 @@ class LongitudinalMpc(object):
 
     if read_distance_lines == 2:
       self.save_car_data(v_ego)
-      generatedTR = self.dynamic_follow(v_ego)
+      generatedTR = self.dyn_fol_exp(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
 
       if abs(generated_cost - self.last_cost) > .15:
