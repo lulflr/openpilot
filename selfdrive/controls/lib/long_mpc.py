@@ -170,9 +170,10 @@ class LongitudinalMpc(object):
 
   def dyn_fol_exp(self, v_ego):
     des_TR = 1.6
-    if self.relative_velocity < 0 and self.relative_velocity is not None:
+    ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * 100.0  # to frames
+    if self.relative_velocity < 0 and self.relative_velocity is not None and ttc > 0:
       if self.dyn_time >= self.last_ttc or self.last_ttc is None:
-        self.last_ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * 100.0  # to frames
+        self.last_ttc = ttc
         self.dyn_time = 0
       curr_TR = self.relative_distance / v_ego
       x = [0, self.last_ttc / 2.0]
