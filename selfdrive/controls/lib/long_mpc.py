@@ -8,7 +8,6 @@ from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from scipy import interpolate
 import math
-import json
 import time
 
 class LongitudinalMpc(object):
@@ -32,6 +31,7 @@ class LongitudinalMpc(object):
     self.relative_velocity = None
     self.relative_distance = None
     self.stop_and_go = False
+    self.rates = []
     self.dyn_time = 0
     self.last_ttc = None
 
