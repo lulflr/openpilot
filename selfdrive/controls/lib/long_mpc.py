@@ -190,7 +190,7 @@ class LongitudinalMpc(object):
       x = [-11.176, -10.1237, -8.711, -7.1526, -5.2906, -2.6385, 0.0]
       y = [0.8, 0.6, 0.4462, 0.2938, 0.1771, 0.051, 0]
       TR_mod = interp(self.relative_velocity, x, y)
-      return (TR * (1 - TR_mod)) + (real_TR * TR_mod)
+      return (TR * (1 - TR_mod)) + ((real_TR/2.0) * TR_mod)
     else:
       return TR
 
