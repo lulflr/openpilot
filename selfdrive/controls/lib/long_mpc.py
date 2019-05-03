@@ -10,6 +10,7 @@ from scipy import interpolate
 import math
 import time
 
+
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
     self.live_longitudinal_mpc = live_longitudinal_mpc
