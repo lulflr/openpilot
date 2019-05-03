@@ -111,8 +111,8 @@ class LongControl(object):
         y = [-accel, -(accel / 1.06), -(accel / 1.2), -(accel / 1.8), -(accel / 4.4), 0]  # array that matches current chosen accel value
         accel += interp(v_rel, x, y)
       else:
-        x = [-2.2352, -0.89408, 0, 0.89408, 4.4704]
-        y = [-.25, -.175, -.05, .005, .05]
+        x = [3.12928, -2.2352, -0.89408, 0, 0.89408, 4.4704]
+        y = [-accel, -.25, -.175, -.05, .005, .05]  # no gas if lead is -7 mph relative
         accel += interp(v_rel, x, y)
 
 
