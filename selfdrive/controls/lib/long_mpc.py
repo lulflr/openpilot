@@ -33,6 +33,8 @@ class LongitudinalMpc(object):
     self.relative_distance = None
     self.stop_and_go = False
     self.rates = []
+    self.dyn_time = 0
+    self.last_ttc = None
 
   def save_car_data(self, self_vel):
     while len(self.dynamic_follow_dict["self_vels"]) >= self.calc_rate(2):  # 2 seconds
@@ -182,10 +184,17 @@ class LongitudinalMpc(object):
     des_TR = 1.6
     if self.relative_velocity < 0 and self.relative_velocity is not None and self.relative_distance is not None:
       if self.dyn_time >= self.last_ttc or self.last_ttc is None:
-        self.last_ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * 100.0  # to frames
+        self.last_ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * self.calc_rate()  # to frames
+        self.dyn_time = 0
+      ttc = self.calc_ttc(v_ego, self.relative_velocity + v_ego, self.relative_distance) * self.calc_rate()
+      if abs(self.last_ttc - ttc) > 3.0:
+        self.last_ttc = ttc
         self.dyn_time = 0
       if v_ego != 0:
         curr_TR = self.relative_distance / v_ego
+        x = [-11.176, 0]
+        y = [0, curr_TR / 4.0]
+        curr_TR -= interp(self.relative_velocity, x, y)
       else:
         curr_TR = des_TR
       x = [0, self.last_ttc / 4.0]
