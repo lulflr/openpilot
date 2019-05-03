@@ -92,8 +92,6 @@ class LongitudinalMpc(object):
       return 0.9  # 10m at 40km/hr
 
     if read_distance_lines == 2:
-      with open("/data/long_times.txt", "a") as f:
-        f.write(str(time.time())+"\n")
       #self.save_car_data(v_ego)
       generatedTR = self.dyn_fol_exp(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
