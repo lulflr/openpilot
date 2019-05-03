@@ -33,8 +33,6 @@ class LongitudinalMpc(object):
     self.relative_distance = None
     self.stop_and_go = False
     self.rates = []
-    self.dyn_time = 0
-    self.last_ttc = None
 
   def save_car_data(self, self_vel):
     if len(self.dynamic_follow_dict["self_vels"]) >= 200:  # 100hz, so 200 items is 2 seconds
