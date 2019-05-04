@@ -206,6 +206,7 @@ class LongitudinalMpc(object):
       TR_mod = np.interp(self.relative_velocity, x, y)
       output_TR = (TR * (1 - TR_mod)) + (real_TR * TR_mod)
       return output_TR
+    return TR
 
   def ultimate_dynamic_follow(self, v_ego):  # works alright, just need to tune. good braking and close distance, too much braking at far distance
     TR = 1.2
