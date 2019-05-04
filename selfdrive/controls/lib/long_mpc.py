@@ -227,7 +227,7 @@ class LongitudinalMpc(object):
         curr_TR = des_TR
       x = [0, self.last_ttc / 4.0]
       y = [curr_TR, des_TR]
-      dyn_TR = np.interp(self.dyn_time, x, y)
+      dyn_TR = interp(self.dyn_time, x, y)
       self.dyn_time += 1
       return dyn_TR
     else:
