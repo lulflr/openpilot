@@ -206,10 +206,13 @@ class LongitudinalMpc(object):
           x = [0.0, 5.0]
           y = [.75, .25]
           diff = interp(abs(TR-real_TR), x, y)
-          x = [-20.0, 0.0]
+          x = [-8.9408, 0.0]
           y = [3.5, 3.0]
-          val = math.sqrt((TR*(1-diff) + (real_TR*diff))**(abs(TR-real_TR)*interp(self.relative_velocity, x,y)))
-          x = [-20, 0]
+          try:
+            val = math.sqrt((TR*(1-diff) + (real_TR*diff))**(abs(TR-real_TR)*interp(self.relative_velocity, x,y)))
+          except:
+            return TR
+          x = [-8.9408, 0]
           y = [16, 50]
           x = [0, abs(TR-real_TR) * interp(self.relative_velocity, x, y)]
           y = [TR, real_TR]
