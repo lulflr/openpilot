@@ -32,8 +32,6 @@ class LongitudinalMpc(object):
     self.relative_velocity = None
     self.relative_distance = None
     self.stop_and_go = False
-    self.dyn_time = 0
-    self.last_ttc = None
     self.last_rate = None
     self.new_frame = True
 
@@ -94,8 +92,8 @@ class LongitudinalMpc(object):
 
     if read_distance_lines == 2:
       self.new_frame = True  # for rate calculation so it doesn't update time multiple times a frame
-      #self.save_car_data(v_ego)
-      generatedTR = self.dynamic_follow_hopefully_tha_best(v_ego)
+      self.save_car_data(v_ego)
+      generatedTR = self.dynamic_follow(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
 
       if abs(generated_cost - self.last_cost) > .15:
