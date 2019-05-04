@@ -93,7 +93,7 @@ class LongitudinalMpc(object):
 
     if read_distance_lines == 2:
       #self.save_car_data(v_ego)
-      generatedTR = self.new_dynamic_follow(v_ego)
+      generatedTR = self.ultimate_dynamic_follow(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
 
       if abs(generated_cost - self.last_cost) > .15:
@@ -178,7 +178,7 @@ class LongitudinalMpc(object):
         return None
     return d_rel / float(v_rel)
 
-  def dynamic_follow_test(self, v_ego):
+  def dynamic_follow_test(self, v_ego):  # TESTED; mediocre performance
     x_vel = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
     y_mod = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
     TR = interpolate.interp1d(x_vel, y_mod, fill_value='extrapolate')(v_ego)[()]  # extrapolate above 90 mph
@@ -194,7 +194,31 @@ class LongitudinalMpc(object):
     else:
       return TR
 
-  def new_dynamic_follow(self, v_ego):
+  def ultimate_dynamic_follow(self, v_ego):
+    TR = 1.2
+    if self.relative_velocity < 0 and self.relative_velocity is not None:
+      if v_ego != 0:
+        real_TR = self.relative_distance / v_ego
+      else:
+        real_TR = TR
+      if real_TR > TR:  # do dynamic follow stuff here
+        x=[0.0, 5.0]
+        y=[.75, .25]
+        intrp = np.interp(abs(TR-real_TR), x, y)
+        x = [-20.0, 0.0]
+        y = [3.5, 3.0]
+        val = math.sqrt((TR*(1-intrp) + (real_TR*intrp))**(abs(TR-real_TR)*np.interp(self.relative_velocity, x,y)))
+        x = [-20, 0]
+        y = [16, 50]
+        x = [0, abs(TR-real_TR) * np.interp(self.relative_velocity, x, y)]
+        y = [TR, real_TR]
+        return np.interp(val, x, y)
+      else:
+        return TR
+    else:
+      return TR
+
+  def new_dynamic_follow(self, v_ego):  # TODO: UNTESTED
     TR = 1.2
     if self.relative_velocity < 0 and self.relative_velocity is not None:
       if v_ego != 0:
