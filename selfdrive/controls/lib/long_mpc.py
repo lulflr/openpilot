@@ -93,7 +93,7 @@ class LongitudinalMpc(object):
 
     if read_distance_lines == 2:
       #self.save_car_data(v_ego)
-      generatedTR = self.ultimate_dynamic_follow(v_ego)
+      generatedTR = self.dynamic_follow_hopefully_tha_best(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
 
       if abs(generated_cost - self.last_cost) > .15:
@@ -194,7 +194,20 @@ class LongitudinalMpc(object):
     else:
       return TR
 
-  def ultimate_dynamic_follow(self, v_ego):
+  def dynamic_follow_hopefully_tha_best(self, v_ego):
+    TR = 1.4
+    if self.relative_velocity is not None:  # if lead
+      if v_ego != 0:
+        real_TR = self.relative_distance / v_ego
+      else:
+        real_TR = TR
+      x = [-8.9408, 0]
+      y = [.4, 0]
+      TR_mod = np.interp(self.relative_velocity, x, y)
+      output_TR = (TR * (1 - TR_mod)) + (real_TR * TR_mod)
+      return output_TR
+
+  def ultimate_dynamic_follow(self, v_ego):  # works alright, just need to tune. good braking and close distance, too much braking at far distance
     TR = 1.2
     if self.relative_velocity is not None:
       if self.relative_velocity < 0 and v_ego > 2.2352:
