@@ -79,7 +79,7 @@ class LongControl(object):
     self.pid.reset()
     self.v_pid = v_pid
 
-  def dynamic_gas(self, v_ego, v_rel, d_rel, gasinterceptor, gasbuttonstatus):
+  def dynamic_gas(self, v_ego, v_rel, gasinterceptor, gasbuttonstatus):
     dynamic = False
     if gasinterceptor:
       if gasbuttonstatus == 0:
@@ -111,14 +111,13 @@ class LongControl(object):
         y = [-accel, -(accel / 1.06), -(accel / 1.2), -(accel / 1.8), -(accel / 4.4), 0]  # array that matches current chosen accel value
         accel += interp(v_rel, x, y)
       else:
-        x = [3.12928, -2.2352, -0.89408, 0, 0.89408, 4.4704]
-        y = [-accel, -.25, -.175, -.05, .005, .05]  # no gas if lead is -7 mph relative
+        x = [-2.2352, -0.89408, 0, 0.89408, 4.4704]
+        y = [-.25, -.175, -.05, .005, .05]
         accel += interp(v_rel, x, y)
-
 
     min_return = 0.0
     max_return = 1.0
-    return round(max(min(accel, max_return), min_return), 5)  # ensure we return a value between range
+    return round(max(min(accel, max_return), min_return), 3)  # ensure we return a value between range
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future,
              a_target, CP, gasinterceptor, gasbuttonstatus):
@@ -132,14 +131,15 @@ class LongControl(object):
 
     if l20 is not None:
       self.lead_1 = l20.live20.leadOne
-      vRel = self.lead_1.vRel
-      dRel = self.lead_1.dRel
+      if self.lead_1.status:
+        vRel = self.lead_1.vRel
+      else:
+        vRel = None
     else:
       vRel = None
-      dRel = None
 
     #gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
-    gas_max = self.dynamic_gas(v_ego, vRel, dRel, gasinterceptor, gasbuttonstatus)
+    gas_max = self.dynamic_gas(v_ego, vRel, gasinterceptor, gasbuttonstatus)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine

@@ -93,7 +93,7 @@ class LongitudinalMpc(object):
 
     if read_distance_lines == 2:
       #self.save_car_data(v_ego)
-      generatedTR = self.dynamin_follow_test(v_ego)
+      generatedTR = self.new_dynamic_follow(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
 
       if abs(generated_cost - self.last_cost) > .15:
@@ -178,7 +178,7 @@ class LongitudinalMpc(object):
         return None
     return d_rel / float(v_rel)
 
-  def dynamin_follow_test(self, v_ego):
+  def dynamic_follow_test(self, v_ego):
     x_vel = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
     y_mod = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
     TR = interpolate.interp1d(x_vel, y_mod, fill_value='extrapolate')(v_ego)[()]  # extrapolate above 90 mph
@@ -191,6 +191,20 @@ class LongitudinalMpc(object):
       y = [0.8, 0.6, 0.4462, 0.2938, 0.1771, 0.051, 0]
       TR_mod = interp(self.relative_velocity, x, y)
       return (TR * (1 - TR_mod)) + ((real_TR / 1.5) * TR_mod)
+    else:
+      return TR
+
+  def new_dynamic_follow(self, v_ego):
+    TR = 1.2
+    if self.relative_velocity < 0 and self.relative_velocity is not None:
+      if v_ego != 0:
+        real_TR = self.relative_distance / v_ego
+      else:
+        real_TR = TR
+      if real_TR > TR:  # do dynamic follow stuff here
+        return (real_TR + TR) / 1.8
+      else:
+        return TR
     else:
       return TR
 
@@ -266,10 +280,10 @@ class LongitudinalMpc(object):
   def generate_cost(self, TR, v_ego):
     x = [.9, 1.8, 2.7]
     y = [1.0, .1, .05]
-    if v_ego != 0 and v_ego is not None:
+    '''if v_ego != 0 and v_ego is not None:
       real_TR = self.relative_distance / float(v_ego)  # switched to cost generation using actual distance from lead car; should be safer
       if abs(real_TR - TR) >= .25:  # use real TR if diff is greater than x safety threshold
-        TR = real_TR
+        TR = real_TR'''
 
     cost = round(float(interp(TR, x, y)), 3)
     return cost
