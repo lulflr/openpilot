@@ -197,7 +197,7 @@ class LongitudinalMpc(object):
   def ultimate_dynamic_follow(self, v_ego):
     TR = 1.2
     if self.relative_velocity is not None:
-      if self.relative_velocity < 0:
+      if self.relative_velocity < 0 and v_ego > 2.2352:
         if v_ego != 0:
           real_TR = self.relative_distance / v_ego
         else:
