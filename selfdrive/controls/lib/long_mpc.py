@@ -32,9 +32,10 @@ class LongitudinalMpc(object):
     self.relative_velocity = None
     self.relative_distance = None
     self.stop_and_go = False
-    self.rates = []
     self.dyn_time = 0
     self.last_ttc = None
+    self.last_rate = None
+    self.new_frame = True
 
   def save_car_data(self, self_vel):
     while len(self.dynamic_follow_dict["self_vels"]) >= self.calc_rate(2):  # 2 seconds
@@ -92,6 +93,7 @@ class LongitudinalMpc(object):
       return 0.9  # 10m at 40km/hr
 
     if read_distance_lines == 2:
+      self.new_frame = True  # for rate calculation so it doesn't update time multiple times a frame
       #self.save_car_data(v_ego)
       generatedTR = self.dynamic_follow_hopefully_tha_best(v_ego)
       generated_cost = self.generate_cost(generatedTR, v_ego)
