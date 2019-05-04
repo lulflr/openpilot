@@ -229,7 +229,7 @@ class LongitudinalMpc(object):
     if self.relative_velocity is not None:  # if lead
       real_TR = self.relative_distance / v_ego if v_ego != 0 else TR
       x = [-15.6464, -11.62306, -7.84278, -5.45002, -4.37006, -3.21869, -1.72406, -0.91097, -0.49174, 0.0, 0.26822, 0.77499, 1.85325, 2.68511]  # relative velocity speeds
-      y = [0.504, 0.45, 0.38, 0.302, 0.252, 0.189, 0.144, 0.101, 0.058, 0.0, -0.05, -0.123, -0.216, -0.27]  # modification percentages converted from normal TR mod array
+      y = [0.4032, 0.378, 0.3344, 0.2778, 0.2419, 0.189, 0.144, 0.101, 0.058, 0.0, -0.05, -0.123, -0.216, -0.27]  # modification percentages converted from normal TR mod array
       TR_mod = np.interp(self.relative_velocity, x, y)
       if real_TR < TR:
         TR_mod = -TR_mod  # this flips the mod if the car is closer than generated TR somehow, so that negative relvel will increase distance, not shorten
