@@ -195,17 +195,30 @@ class LongitudinalMpc(object):
       return TR
 
   def dynamic_follow_hopefully_tha_best(self, v_ego):
-    TR = 1.4
+    x_vel = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
+    y_mod = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
+
+    stop_and_go_magic_number = 8.9408  # 20 mph
+
+    if v_ego <= 0.89408:  # 2 mph
+      self.stop_and_go = True
+    elif v_ego >= stop_and_go_magic_number:
+      self.stop_and_go = False
+
+    if self.stop_and_go:  # this allows a smooth deceleration to a stop, while being able to have smooth stop and go
+      x = [stop_and_go_magic_number / 2.0, stop_and_go_magic_number]  # from 10 to 20 mph, ramp sng distance to regular dynamic follow value
+      y = [1.6, interp(x[1], x_vel, y_mod)]  # grab value from speed arrays
+      TR = interp(v_ego, x, y)
+    else:
+      TR = interpolate.interp1d(x_vel, y_mod, fill_value='extrapolate')(v_ego)[()]  # extrapolate above 90 mph
+
     if self.relative_velocity is not None:  # if lead
-      if v_ego != 0:
-        real_TR = self.relative_distance / v_ego
-      else:
-        real_TR = TR
-      x = [-8.9408, 0]
-      y = [.4, 0]
+      real_TR = self.relative_distance / v_ego if v_ego != 0 else TR
+      x = [-15.6464, -11.62306, -7.84278, -5.45002, -4.37006, -3.21869, -1.72406, -0.91097, -0.49174, 0.0, 0.26822, 0.77499, 1.85325, 2.68511]  # relative velocity speeds
+      y = [0.504, 0.45, 0.38, 0.302, 0.252, 0.189, 0.144, 0.101, 0.058, 0.0, -0.05, -0.123, -0.216, -0.27]  # modification percentages converted from normal TR mod array
       TR_mod = np.interp(self.relative_velocity, x, y)
-      output_TR = (TR * (1 - TR_mod)) + (real_TR * TR_mod)
-      return output_TR
+      TR = (TR * (1 - TR_mod)) + (real_TR * TR_mod)
+      return TR
     return TR
 
   def ultimate_dynamic_follow(self, v_ego):  # works alright, just need to tune. good braking and close distance, too much braking at far distance
