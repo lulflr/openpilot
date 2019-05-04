@@ -196,27 +196,25 @@ class LongitudinalMpc(object):
 
   def ultimate_dynamic_follow(self, v_ego):
     TR = 1.2
-    if self.relative_velocity < 0 and self.relative_velocity is not None:
-      if v_ego != 0:
-        real_TR = self.relative_distance / v_ego
-      else:
-        real_TR = TR
-      if real_TR > TR:  # do dynamic follow stuff here
-        x=[0.0, 5.0]
-        y=[.75, .25]
-        intrp = np.interp(abs(TR-real_TR), x, y)
-        x = [-20.0, 0.0]
-        y = [3.5, 3.0]
-        val = math.sqrt((TR*(1-intrp) + (real_TR*intrp))**(abs(TR-real_TR)*np.interp(self.relative_velocity, x,y)))
-        x = [-20, 0]
-        y = [16, 50]
-        x = [0, abs(TR-real_TR) * np.interp(self.relative_velocity, x, y)]
-        y = [TR, real_TR]
-        return np.interp(val, x, y)
-      else:
-        return TR
-    else:
-      return TR
+    if self.relative_velocity is not None:
+      if self.relative_velocity < 0:
+        if v_ego != 0:
+          real_TR = self.relative_distance / v_ego
+        else:
+          real_TR = TR
+        if real_TR > TR:  # do dynamic follow stuff here
+          x = [0.0, 5.0]
+          y = [.75, .25]
+          diff = interp(abs(TR-real_TR), x, y)
+          x = [-20.0, 0.0]
+          y = [3.5, 3.0]
+          val = math.sqrt((TR*(1-diff) + (real_TR*diff))**(abs(TR-real_TR)*interp(self.relative_velocity, x,y)))
+          x = [-20, 0]
+          y = [16, 50]
+          x = [0, abs(TR-real_TR) * interp(self.relative_velocity, x, y)]
+          y = [TR, real_TR]
+          return interp(val, x, y)
+    return TR
 
   def new_dynamic_follow(self, v_ego):  # TODO: UNTESTED
     TR = 1.2
