@@ -11,6 +11,7 @@ import selfdrive.messaging as messaging
 from selfdrive.config import Conversions as CV
 from selfdrive.services import service_list
 from selfdrive.car.car_helpers import get_car
+from selfdrive.controls.lib.model_parser import CAMERA_OFFSET
 from selfdrive.controls.lib.drive_helpers import learn_angle_model_bias, \
                                                  get_events, \
                                                  create_event, \
@@ -72,7 +73,7 @@ def data_sample(CI, CC, plan_sock, path_plan_sock, thermal, calibration, health,
   if td is not None:
     overtemp = td.thermal.thermalStatus >= ThermalStatus.red
     free_space = td.thermal.freeSpace < 0.07  # under 7% of space free no enable allowed
-    low_battery = td.thermal.batteryPercent < 1  # at zero percent battery, OP should not be allowed
+    low_battery = td.thermal.batteryPercent < 1 and td.thermal.chargingError  # at zero percent battery, while discharging, OP should not be allowed
 
   # Create events for battery, temperature and disk space
   if low_battery:
@@ -287,7 +288,7 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
 
 def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate,
               carcontrol, live100, AM, driver_status,
-              LaC, LoC, angle_model_bias, passive, start_time, params, v_acc, a_acc):
+              LaC, LoC, angle_model_bias, passive, start_time, v_acc, a_acc):
   """Send actuators and hud commands to the car, send live100 and MPC logging"""
   plan_ts = plan.logMonoTime
   plan = plan.plan
@@ -334,7 +335,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
     "alertType": AM.alert_type,
     "alertSound": "",  # no EON sounds yet
     "awarenessStatus": max(driver_status.awareness, 0.0) if isEnabled(state) else 0.0,
-    "driverMonitoringOn": bool(driver_status.monitor_on),
+    "driverMonitoringOn": bool(driver_status.monitor_on and driver_status.face_detected),
     "canMonoTimes": list(CS.canMonoTimes),
     "planMonoTime": plan_ts,
     "pathPlanMonoTime": path_plan.logMonoTime,
@@ -387,9 +388,6 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
   cc_send.carControl = CC
   carcontrol.send(cc_send.to_bytes())
 
-  if (rk.frame % 36000) == 0:    # update angle offset every 6 minutes
-    params.put("ControlsParams", json.dumps({'angle_model_bias': angle_model_bias,
-              'angle_ff_gain': LaC.angle_ff_gain, 'rate_ff_gain': LaC.rate_ff_gain}))
   return CC
 
 
@@ -525,7 +523,7 @@ def controlsd_thread(gctx=None, rate=100):
 
     # Publish data
     CC = data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, carstate, carcontrol,
-                   live100, AM, driver_status, LaC, LoC, angle_model_bias, passive, start_time, params, v_acc, a_acc)
+                   live100, AM, driver_status, LaC, LoC, angle_model_bias, passive, start_time, v_acc, a_acc)
     prof.checkpoint("Sent")
 
     rk.keep_time()  # Run at 100Hz

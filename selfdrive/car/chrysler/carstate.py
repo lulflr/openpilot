@@ -75,8 +75,9 @@ def get_camera_parser(CP):
     ("LKAS_STATUS_OK", "LKAS_HEARTBIT", -1)
   ]
   checks = []
-  
+
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+
 
 class CarState(object):
   def __init__(self, CP):
