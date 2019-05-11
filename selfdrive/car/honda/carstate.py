@@ -41,6 +41,7 @@ def get_can_signals(CP):
       ("WHEEL_SPEED_FR", "FRONT_SPEEDS", 0),
       ("WHEEL_SPEED_RL", "REAR_SPEEDS", 0),
       ("WHEEL_SPEED_RR", "REAR_SPEEDS", 0),
+      ("SPEED1", "SPEEDS", 0),
       ("STEER_ANGLE", "STEERING_SENSORS", 0),
       ("STEER_ANGLE_RATE", "STEERING_SENSORS", 0),
       ("BRAKE_PRESSED", "BRAKE", 0),
@@ -63,7 +64,7 @@ def get_can_signals(CP):
       ("REAR_SPEEDS", 50),
       ("BRAKE", 100),
       ("STEERING_SENSORS", 100),
-      #("ABS", 25),
+      ("SPEEDS", 50),
       ("MACCHINA", 100),
   ]
 
@@ -300,12 +301,8 @@ class CarState(object):
 
     # ******************* parse out can *******************
 
-    if self.CP.carFingerprint in (CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_BOSCH): # TODO: find wheels moving bit in dbc
-      self.standstill = cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] < 0.1
-      self.door_all_closed = 1
-    else:
-      self.standstill = not cp.vl["STANDSTILL"]['WHEELS_MOVING']
-      self.door_all_closed = 1
+    self.standstill = cp.vl["SPEEDS"]['SPEED1'] < 0.1
+    self.door_all_closed = 1
     self.seatbelt = 1
 
     # 2 = temporary; 3 = TBD; 4 = temporary, hit a bump; 5 = (permanent); 6 = temporary; 7 = (permanent)
@@ -323,13 +320,13 @@ class CarState(object):
     speed_factor = SPEED_FACTOR[self.CP.carFingerprint]
     self.v_wheel_fl = cp.vl["FRONT_SPEEDS"]['WHEEL_SPEED_FL'] * CV.KPH_TO_MS * speed_factor
     self.v_wheel_fr = cp.vl["FRONT_SPEEDS"]['WHEEL_SPEED_FR'] * CV.KPH_TO_MS * speed_factor
-    self.v_wheel_rl = cp.vl["FRONT_SPEEDS"]['WHEEL_SPEED_RL'] * CV.KPH_TO_MS * speed_factor
-    self.v_wheel_rr = cp.vl["FRONT_SPEEDS"]['WHEEL_SPEED_RR'] * CV.KPH_TO_MS * speed_factor
+    self.v_wheel_rl = cp.vl["REAR_SPEEDS"]['WHEEL_SPEED_RL'] * CV.KPH_TO_MS * speed_factor
+    self.v_wheel_rr = cp.vl["REAR_SPEEDS"]['WHEEL_SPEED_RR'] * CV.KPH_TO_MS * speed_factor
     self.v_wheel = (self.v_wheel_fl+self.v_wheel_fr+self.v_wheel_rl+self.v_wheel_rr)/4.
 
     # blend in transmission speed at low speed, since it has more low speed accuracy
     self.v_weight = interp(self.v_wheel, v_weight_bp, v_weight_v)
-    speed = (1. - self.v_weight) * cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] * CV.KPH_TO_MS * speed_factor + \
+    speed = (1. - self.v_weight) * cp.vl["SPEEDS"]['SPEED1'] * CV.KPH_TO_MS * speed_factor + \
       self.v_weight * self.v_wheel
 
     if abs(speed - self.v_ego) > 2.0:  # Prevent large accelerations when car starts at non zero speed
@@ -395,7 +392,7 @@ class CarState(object):
       self.v_cruise_pcm = cp.vl["MACCHINA"]['CRUISE_SPEED_PCM']
       # brake switch has shown some single time step noise, so only considered when
       # switch is on for at least 2 consecutive CAN samples
-      self.brake_pressed = cp.vl["POWERTRAIN_DATA"]['BRAKE_PRESSED']
+      self.brake_pressed = cp.vl["BRAKE"]['BRAKE_PRESSED']
       self.brake_switch_prev = self.brake_switch
       self.brake_switch_ts = 0
     
