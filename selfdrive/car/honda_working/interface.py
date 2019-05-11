@@ -11,9 +11,6 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.car.honda.carstate import CarState, get_can_parser, get_cam_can_parser
 from selfdrive.car.honda.values import CruiseButtons, CAR, HONDA_BOSCH, AUDIO_HUD, VISUAL_HUD
 from selfdrive.controls.lib.planner import _A_CRUISE_MAX_V_FOLLOWING
-from selfdrive.kegman_conf import kegman_conf
-
-kegman = kegman_conf()
 
 try:
   from selfdrive.car.honda.carcontroller import CarController
@@ -158,7 +155,7 @@ class CarInterface(object):
     else:
       ret.safetyModel = car.CarParams.SafetyModels.honda
       ret.enableCamera = not any(x for x in CAMERA_MSGS if x in fingerprint)
-      ret.enableGasInterceptor = 0x201 in fingerprint
+      ret.enableGasInterceptor = 0x201 in fingerprint # correspond a 513 en decimal !
       ret.openpilotLongitudinalControl = ret.enableCamera
 
     cloudlog.warn("ECU Camera Simulated: %r", ret.enableCamera)
@@ -190,7 +187,7 @@ class CarInterface(object):
 
     ret.steerKf = 0.00006 # conservative feed-forward
 
-    if candidate in [CAR.CIVIC, CAR.CIVIC_BOSCH, CAR.Clio_IV_2018, CAR.P_308_2018]:
+    if candidate in [CAR.CIVIC, CAR.CIVIC_BOSCH, CAR.P_308_2018]:
       stop_and_go = True
       ret.mass = mass_civic
       ret.wheelbase = wheelbase_civic
@@ -295,35 +292,12 @@ class CarInterface(object):
       ret.wheelbase = 2.81
       ret.centerToFront = ret.wheelbase * 0.41
       ret.steerRatio = 16.0         # as spec
+      tire_stiffness_factor = 0.444 # not optimized yet
+      ret.steerKpV, ret.steerKiV = [[0.38], [0.11]]
       ret.longitudinalKpBP = [0., 5., 35.]
       ret.longitudinalKpV = [1.2, 0.8, 0.5]
       ret.longitudinalKiBP = [0., 35.]
       ret.longitudinalKiV = [0.18, 0.12]
-      #tire_stiffness_factor = 0.444 # not optimized yet  
-      tire_stiffness_factor = 0.82  # trying same as odyssey
-      #ret.steerKpV, ret.steerKiV = [[0.38], [0.11]] #original model: OS 30%, risetime: 1.75s, Max Output 0.8 of 1  
-      #ret.steerKpV, ret.steerKiV = [[0.38], [0.23]] #model: OS 10%,risetime 2.75s - RESULT: Better than default stock values.
-      #ret.steerKpV, ret.steerKiV = [[0.38], [0.3]]  #model: OS 5%, risetime 3.5s  - NOT TESTED
-      #ret.steerKpV, ret.steerKiV = [[0.38], [0.25]] #model: OS 7%, risetime 3s    - NOT TESTED
-      #ret.steerKpV, ret.steerKiV = [[0.38], [0.35]] #model: OS 2%, risetime 4s    - NOT TESTED
-      ret.steerKpV, ret.steerKiV = [[0.5], [0.22]]   #tweaking optimal result      - RESULT: Seems to fix slow / fast lane hug!
-      #ret.steerKpV, ret.steerKiV = [[0.5], [0.23]]  #model: OS 8%, risetime 2.75s - RESULT: Great centering on fast turns. Fixes fast lane but slow lane still hugs.
-      #ret.steerKpV, ret.steerKiV = [[0.5], [0.24]]  #tweaking optimal result      - RESULT: Does not fix slow lane hug
-      #ret.steerKpV, ret.steerKiV = [[0.5], [0.3]]   #model: OS 3%, risetime 3.5s  - NOT TESTED
-      #ret.steerKpV, ret.steerKiV = [[0.8], [0.23]]  #model: OS 5%, risetime 3s    - NOT TESTED
-      #ret.steerKpV, ret.steerKiV = [[0.8], [0.3]]   #model: OS 2%, risetime 3.8s  - RESULT: Fast lane left hugging recurrence. Wheel jiggles after fast turn.     
-      #ret.steerKpV, ret.steerKiV = [[1], [0.14]]    #model: OS 18%,risetime 2s    - NOT TESTED - CAUTION Large kP
-      #ret.steerKpV, ret.steerKiV = [[1.5], [0.2]]   #model: OS 5%, risetime 2.3s  - NOT TESTED - CAUTION Large kP
-      #ret.steerKpV, ret.steerKiV = [[2], [0.24]]    #model: OS 0%, risetime 3s    - NOT TESTED - CAUTION Large kP
-      #ret.steerKpV, ret.steerKiV = [[2], [0.21]]    #model: OS 3%, risetime 2.3s  - NOT TESTED - CAUTION Large kP
-      #ret.steerKf = 0.00009 # - NOT TESTED
-      #ret.steerKf = 0.00012 # - NOT TESTED - RESULT: 0.5,0.23 makes fast lane hug left side 
-      #ret.steerKf = 0.00015 # - NOT TESTED
-      #ret.steerKf = 0.00018 # - NOT TESTED
-      #ret.steerKf = 0.00021 # - NOT TESTED
-      #ret.steerKf = 0.00024 # - NOT TESTED
-      #ret.steerKf = 0.00027 # - NOT TESTED
-      #ret.steerKf = 0.00030 # - NOT TESTED
 
     elif candidate == CAR.RIDGELINE:
       stop_and_go = False
@@ -427,7 +401,7 @@ class CarInterface(object):
                            c.actuators.brake > brakelights_threshold)
 
     # steering wheel
-    ret.steeringAngle = self.CS.angle_steers + float(kegman.conf['angle_steers_offset'])  # deg offset
+    ret.steeringAngle = self.CS.angle_steers
     ret.steeringRate = self.CS.angle_steers_rate
 
     # gear shifter lever
@@ -442,8 +416,6 @@ class CarInterface(object):
     ret.cruiseState.available = bool(self.CS.main_on)
     ret.cruiseState.speedOffset = self.CS.cruise_speed_offset
     ret.cruiseState.standstill = False
-    
-    ret.readdistancelines = self.CS.read_distance_lines
 
     # TODO: button presses
     buttonEvents = []
@@ -498,7 +470,7 @@ class CarInterface(object):
       # TODO: more buttons?
       buttonEvents.append(be)
     ret.buttonEvents = buttonEvents
-    ret.gasbuttonstatus = self.CS.cstm_btns.get_button_status("gas")
+
     # events
     # TODO: event names aren't checked at compile time.
     # Maybe there is a way to use capnp enums directly
