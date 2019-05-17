@@ -52,7 +52,7 @@ class PathPlanner(object):
   def update(self, CP, VM, CS, md, live100):
     v_ego = CS.carState.vEgo
     angle_steers = CS.carState.steeringAngle
-    active = live100.live100.active
+    active = True #live100.live100.active
     angle_offset = live100.live100.angleOffset
     self.MP.update(v_ego, md)
 
@@ -98,7 +98,7 @@ class PathPlanner(object):
     else:
       self.invalid_counter = 0
 
-    plan_valid = self.invalid_counter < 2
+    plan_valid = True #self.invalid_counter < 2
 
     plan_send = messaging.new_message()
     plan_send.init('pathPlan')
