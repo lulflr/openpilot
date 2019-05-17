@@ -157,7 +157,7 @@ class CarInterface(object):
       ret.openpilotLongitudinalControl = False
     else:
       ret.safetyModel = car.CarParams.SafetyModels.honda
-      ret.enableCamera = not any(x for x in CAMERA_MSGS if x in fingerprint)
+      ret.enableCamera = True # not any(x for x in CAMERA_MSGS if x in fingerprint)
       ret.enableGasInterceptor = 0x201 in fingerprint
       ret.openpilotLongitudinalControl = ret.enableCamera
 
@@ -518,13 +518,13 @@ class CarInterface(object):
     else:
       self.cam_can_invalid_count = 0
 
-    if self.CS.steer_error:
+    """if self.CS.steer_error:
       events.append(create_event('steerUnavailable', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
     elif self.CS.steer_warning:
       events.append(create_event('steerTempUnavailable', [ET.WARNING]))
     if self.CS.brake_error:
       events.append(create_event('brakeUnavailable', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
-    """if not ret.gearShifter == 'drive':
+    if not ret.gearShifter == 'drive':
       events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     if ret.doorOpen:
       events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))

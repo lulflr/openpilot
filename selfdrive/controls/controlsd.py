@@ -132,18 +132,18 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
   # DISABLED
   if state == State.disabled:
-    if get_events(events, [ET.ENABLE]):
+    """if get_events(events, [ET.ENABLE]):
       if get_events(events, [ET.NO_ENTRY]):
         for e in get_events(events, [ET.NO_ENTRY]):
           AM.add(str(e) + "NoEntry", enabled)
 
-      else:
-        if get_events(events, [ET.PRE_ENABLE]):
-          state = State.preEnabled
-        else:
-          state = State.enabled
-        AM.add("enable", enabled)
-        v_cruise_kph = initialize_v_cruise(CS.vEgo, CS.buttonEvents, v_cruise_kph_last)
+      else:"""
+    if get_events(events, [ET.PRE_ENABLE]):
+      state = State.preEnabled
+    else:
+      state = State.enabled
+    AM.add("enable", enabled)
+    v_cruise_kph = initialize_v_cruise(CS.vEgo, CS.buttonEvents, v_cruise_kph_last)
 
   # ENABLED
   elif state == State.enabled:
@@ -445,9 +445,9 @@ def controlsd_thread(gctx=None, rate=100):
     raise Exception("unsupported car")
 
   # if stock camera is connected, then force passive behavior
-  #if not CP.enableCamera:
-  #  passive = True
-  #  sendcan = None
+  if not CP.enableCamera:
+    passive = True
+    sendcan = None
   if not CP.enableCamera:
     passive = False
 
@@ -525,8 +525,8 @@ def controlsd_thread(gctx=None, rate=100):
     events += list(plan.plan.events)
 
     # Only allow engagement with brake pressed when stopped behind another stopped car
-    if CS.brakePressed and plan.plan.vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
-      events.append(create_event('noTarget', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
+    #if CS.brakePressed and plan.plan.vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
+    #  events.append(create_event('noTarget', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
 
     if not passive:
       # update control state
