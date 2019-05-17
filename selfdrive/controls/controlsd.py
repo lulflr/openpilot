@@ -103,7 +103,7 @@ def data_sample(CI, CC, plan_sock, path_plan_sock, thermal, calibration, health,
   if hh is not None:
     controls_allowed = hh.health.controlsAllowed
     if not controls_allowed and enabled:
-      mismatch_counter += 1
+      mismatch_counter += 0                       #   MODIF  += 1
     if mismatch_counter >= 2:
       events.append(create_event('controlsMismatch', [ET.IMMEDIATE_DISABLE]))
 
@@ -445,9 +445,11 @@ def controlsd_thread(gctx=None, rate=100):
     raise Exception("unsupported car")
 
   # if stock camera is connected, then force passive behavior
+  #if not CP.enableCamera:
+  #  passive = True
+  #  sendcan = None
   if not CP.enableCamera:
-    passive = True
-    sendcan = None
+    passive = False
 
   if passive:
     CP.safetyModel = car.CarParams.SafetyModels.noOutput
