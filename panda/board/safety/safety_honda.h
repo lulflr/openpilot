@@ -134,13 +134,13 @@ static int honda_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 }
 
 static void honda_init(int16_t param) {
-  controls_allowed = 0;
+  controls_allowed = 1;     // MODIF = 0
   bosch_hardware = false;
   honda_alt_brake_msg = false;
 }
 
 static void honda_bosch_init(int16_t param) {
-  controls_allowed = 0;
+  controls_allowed = 1;       // MODIF = 0
   bosch_hardware = true;
   // Checking for alternate brake override from safety parameter
   honda_alt_brake_msg = param == 1 ? true : false;

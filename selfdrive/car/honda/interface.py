@@ -524,7 +524,7 @@ class CarInterface(object):
       events.append(create_event('steerTempUnavailable', [ET.WARNING]))
     if self.CS.brake_error:
       events.append(create_event('brakeUnavailable', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
-    if not ret.gearShifter == 'drive':
+    """if not ret.gearShifter == 'drive':
       events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     if ret.doorOpen:
       events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
@@ -540,14 +540,14 @@ class CarInterface(object):
       events.append(create_event('brakeHold', [ET.NO_ENTRY, ET.USER_DISABLE]))
     if self.CS.park_brake:
       events.append(create_event('parkBrake', [ET.NO_ENTRY, ET.USER_DISABLE]))
-
+    """
     if self.CP.enableCruise and ret.vEgo < self.CP.minEnableSpeed:
       events.append(create_event('speedTooLow', [ET.NO_ENTRY]))
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
-    if (ret.gasPressed and not self.gas_pressed_prev) or \
+    """if (ret.gasPressed and not self.gas_pressed_prev) or \
        (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgo > 0.001)):
-      events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
+      events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))"""
 
     if ret.gasPressed:
       events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))

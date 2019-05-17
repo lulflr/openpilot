@@ -538,8 +538,8 @@ class Planner(object):
     events = []
     if model_dead:
       events.append(create_event('modelCommIssue', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
-    if 'fault' in self.radar_errors:
-      events.append(create_event('radarFault', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
+    #if 'fault' in self.radar_errors:
+    #  events.append(create_event('radarFault', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
 
     plan_send.plan.events = events
     plan_send.plan.mdMonoTime = md.logMonoTime
