@@ -514,7 +514,7 @@ class CarInterface(object):
       self.cam_can_invalid_count += 1
       # wait 1.0s before throwing the alert to avoid it popping when you turn off the car
       if self.cam_can_invalid_count >= 100 and self.CS.CP.carFingerprint not in HONDA_BOSCH:
-        events.append(create_event('invalidGiraffeHonda', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
+        events.append(create_event('invalidGiraffeHonda', [ET.WARNING]))#[ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
     else:
       self.cam_can_invalid_count = 0
 
