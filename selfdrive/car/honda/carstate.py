@@ -137,7 +137,8 @@ def get_cam_can_parser(CP):
   #if CP.carFingerprint in [CAR.CRV, CAR.ACURA_RDX]:
   #  checks = [(0x194, 100)]
 
-  cam_bus = 2 # a ajuster si on a pas l'id 0xe4
+  cam_bus = 0 # a ajuster si on a pas l'id 0xe4
+  # surtout pour avoir le cam can_valid et pas l'erreur de giraffehonda
 
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, cam_bus)
 
