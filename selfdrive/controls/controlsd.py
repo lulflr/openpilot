@@ -132,18 +132,18 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
   # DISABLED
   if state == State.disabled:
-    """if get_events(events, [ET.ENABLE]):
+    if get_events(events, [ET.ENABLE]):
       if get_events(events, [ET.NO_ENTRY]):
         for e in get_events(events, [ET.NO_ENTRY]):
           AM.add(str(e) + "NoEntry", enabled)
 
-      else:"""
-    if get_events(events, [ET.PRE_ENABLE]):
-      state = State.preEnabled
     else:
-      state = State.enabled
-    AM.add("enable", enabled)
-    v_cruise_kph = initialize_v_cruise(CS.vEgo, CS.buttonEvents, v_cruise_kph_last)
+      if get_events(events, [ET.PRE_ENABLE]):
+        state = State.preEnabled
+      else:
+        state = State.enabled
+      AM.add("enable", enabled)
+      v_cruise_kph = initialize_v_cruise(CS.vEgo, CS.buttonEvents, v_cruise_kph_last)
 
   # ENABLED
   elif state == State.enabled:
@@ -207,8 +207,8 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
 
   actuators = car.CarControl.Actuators.new_message()
 
-  enabled = isEnabled(state)
-  active = isActive(state)
+  enabled = True #isEnabled(state)
+  active = True #isActive(state)
 
   # check if user has interacted with the car
   driver_engaged = len(CS.buttonEvents) > 0 or \
