@@ -448,8 +448,8 @@ def controlsd_thread(gctx=None, rate=100):
   if not CP.enableCamera:
     passive = True
     sendcan = None
-  if not CP.enableCamera:
-    passive = False
+  #if not CP.enableCamera:
+  #  passive = False
 
   if passive:
     CP.safetyModel = car.CarParams.SafetyModels.noOutput

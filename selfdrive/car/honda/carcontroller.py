@@ -169,7 +169,7 @@ class CarController(object):
     #if CS.cstm_btns.get_button_status("lka") == 0:     MODIF
     #  apply_steer = 0                                  MODIF
     # any other cp.vl[0x18F]['STEER_STATUS'] is common and can happen during user override. sending 0 torque to avoid EPS sending error 5
-    lkas_active = enabled #and not CS.steer_not_allowed
+    lkas_active = enabled and not CS.steer_not_allowed
 
     # Send CAN commands.
     can_sends = []
