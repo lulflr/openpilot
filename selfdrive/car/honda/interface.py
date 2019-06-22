@@ -569,7 +569,7 @@ class CarInterface(object):
     for b in ret.buttonEvents:
 
       # do enable on both accel and decel buttons
-      if b.type in ["accelCruise", "decelCruise"] and not b.pressed:
+      if b.type in ["accelCruise", "decelCruise","altButton3"] and not b.pressed:
         self.last_enable_pressed = cur_time
         enable_pressed = True
 
@@ -588,7 +588,7 @@ class CarInterface(object):
          (enable_pressed and get_events(events, [ET.NO_ENTRY])):
         events.append(create_event('buttonEnable', [ET.ENABLE]))
         self.last_enable_sent = cur_time
-    elif enable_pressed:
+    if enable_pressed and not get_events(events, [ET.NO_ENTRY]):
       events.append(create_event('buttonEnable', [ET.ENABLE]))
 
     ret.events = events
