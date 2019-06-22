@@ -373,7 +373,7 @@ ALERTS = [
   Alert(
       "commIssue",
       "TAKE CONTROL IMMEDIATELY",
-      "CAN Error: Check Connections",
+      "Hello Jean!",
       AlertStatus.critical, AlertSize.full,
       Priority.HIGHEST, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, 1., 3., 4.),
 
@@ -529,7 +529,7 @@ ALERTS = [
   Alert(
       "commIssueNoEntry",
       "openpilot Unavailable",
-      "CAN Error: Check Connections",
+      "Hello Lucie!",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeError, .4, 2., 3.),
 
