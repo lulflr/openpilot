@@ -102,3 +102,5 @@ BO_ 649 MACCHINA: 8 MACC
 
 VAL_ 649 GEAR_SHIFTER 32 "L" 16 "S" 8 "D" 4 "N" 2 "R" 1 "P" ;
 VAL_ 649 GEAR 7 "L" 10 "S" 4 "D" 3 "N" 2 "R" 1 "P" ;
+VAL_ 649 CRUISE_BUTTONS 7 "tbd" 6 "tbd" 5 "tbd" 4 "accel_res" 3 "decel_set" 2 "cancel" 1 "main" 0 "none" ;
+VAL_ 649 CRUISE_SETTING 3 "distance_adj" 2 "tbd" 1 "lkas_button" 0 "none" ;
