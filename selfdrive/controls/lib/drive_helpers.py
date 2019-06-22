@@ -68,10 +68,10 @@ def learn_angle_offset(lateral_control, v_ego, angle_offset, c_poly, c_prob, ang
   alpha_v = alpha * c_prob * (max(v_ego - min_learn_speed, 0.)) * slow_factor
 
   # only learn if lateral control is active and if driver is not overriding:
-  if lateral_control and not steer_override:
+  """if lateral_control and not steer_override:
     angle_offset += c_poly[3] * alpha_v
     angle_offset = clip(angle_offset, min_offset, max_offset)
-
+  """
   return angle_offset
 
 
