@@ -20,6 +20,7 @@ def parse_gear_shifter(gear, vals):
   except KeyError:
     return "unknown"
 
+# comment to change version
 
 def calc_cruise_offset(offset, speed):
   # euristic formula so that speed is controlled to ~ 0.3m/s below pid_speed
