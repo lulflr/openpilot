@@ -503,12 +503,12 @@ class CarInterface(object):
     # TODO: event names aren't checked at compile time.
     # Maybe there is a way to use capnp enums directly
     events = []
-    if not self.CS.can_valid:
+    """if not self.CS.can_valid:
       self.can_invalid_count += 1
       if self.can_invalid_count >= 5:
         events.append(create_event('commIssue', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
     else:
-      self.can_invalid_count = 0
+      self.can_invalid_count = 0"""
 
     if not self.CS.cam_can_valid and self.CP.enableCamera:
       self.cam_can_invalid_count += 1
