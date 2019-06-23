@@ -508,7 +508,7 @@ class CarInterface(object):
       if self.can_invalid_count >= 5:
         events.append(create_event('commIssue', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
     else:
-      self.can_invalid_count = 0"""
+      self.can_invalid_count = 0
 
     if not self.CS.cam_can_valid and self.CP.enableCamera:
       self.cam_can_invalid_count += 1
@@ -516,7 +516,7 @@ class CarInterface(object):
       if self.cam_can_invalid_count >= 100 and self.CS.CP.carFingerprint not in HONDA_BOSCH:
         events.append(create_event('invalidGiraffeHonda', [ET.WARNING]))#[ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
     else:
-      self.cam_can_invalid_count = 0
+      self.cam_can_invalid_count = 0"""
 
     """if self.CS.steer_error:
       events.append(create_event('steerUnavailable', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
