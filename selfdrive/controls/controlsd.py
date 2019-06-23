@@ -341,7 +341,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
   dat = messaging.new_message()
   dat.init('live100')
   dat.live100 = {
-    "alertText1": CC.apply_steer, #modifie, normalement alert text 1
+    "alertText1": AM.alert_text_1,
     "alertText2": AM.alert_text_2,
     "alertSize": AM.alert_size,
     "alertStatus": AM.alert_status,
