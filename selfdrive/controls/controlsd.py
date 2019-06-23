@@ -207,8 +207,8 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
 
   actuators = car.CarControl.Actuators.new_message()
 
-  enabled = True #isEnabled(state)
-  active = True #isActive(state)
+  enabled = isEnabled(state)
+  active = isActive(state)
 
   # check if user has interacted with the car
   driver_engaged = len(CS.buttonEvents) > 0 or \
@@ -279,7 +279,7 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
   actuators.steer, actuators.steerAngle = LaC.update(active, CS.vEgo, CS.steeringAngle, 
                                                      CS.steeringPressed, CP, VM, path_plan)
  #BB added for ALCA support
-  #CS.pid = LaC.pid
+  CS.pid = LaC.pid
   # Send a "steering required alert" if saturation count has reached the limit
   if LaC.sat_flag and CP.steerLimitAlert:
     AM.add("steerSaturated", enabled)
@@ -341,7 +341,7 @@ def data_send(plan, path_plan, CS, CI, CP, VM, state, events, actuators, v_cruis
   dat = messaging.new_message()
   dat.init('live100')
   dat.live100 = {
-    "alertText1": AM.alert_text_1,
+    "alertText1": CC.apply_steer, #modifie, normalement alert text 1
     "alertText2": AM.alert_text_2,
     "alertSize": AM.alert_size,
     "alertStatus": AM.alert_status,
@@ -520,9 +520,9 @@ def controlsd_thread(gctx=None, rate=100):
 
     path_plan_age = (start_time - path_plan.logMonoTime) / 1e9
     plan_age = (start_time - plan.logMonoTime) / 1e9
-    """if not path_plan.pathPlan.valid or plan_age > 0.5 or path_plan_age > 0.5:
+    if not path_plan.pathPlan.valid or plan_age > 0.5 or path_plan_age > 0.5:
       events.append(create_event('plannerError', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    events += list(plan.plan.events)"""
+    events += list(plan.plan.events)
 
     # Only allow engagement with brake pressed when stopped behind another stopped car
     #if CS.brakePressed and plan.plan.vTargetFuture >= STARTING_TARGET_SPEED and not CP.radarOffCan and CS.vEgo < 0.3:
