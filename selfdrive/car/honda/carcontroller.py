@@ -140,7 +140,7 @@ class CarController(object):
     elif CS.CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX):
       STEER_MAX = 0x3e8  # CR-V only uses 12-bits and requires a lower value (max value from energee)
     else:
-      STEER_MAX = 1000
+      STEER_MAX = 0x1000
 
     #update custom UI buttons and alerts
     CS.UE.update_custom_ui()
@@ -165,7 +165,7 @@ class CarController(object):
     # steer torque is converted back to CAN reference (positive when steering right)
     apply_gas = clip(actuators.gas, 0., 1.)
     apply_brake = int(clip(self.brake_last * BRAKE_MAX, 0, BRAKE_MAX - 1))
-    apply_steer = int(clip(alca_steer * STEER_MAX, -STEER_MAX, STEER_MAX))
+    apply_steer = int(clip(-alca_steer * STEER_MAX, -STEER_MAX, STEER_MAX))
     #if CS.cstm_btns.get_button_status("lka") == 0:     MODIF
     #  apply_steer = 0                                  MODIF
     # any other cp.vl[0x18F]['STEER_STATUS'] is common and can happen during user override. sending 0 torque to avoid EPS sending error 5
