@@ -427,7 +427,7 @@ class CarInterface(object):
                            c.actuators.brake > brakelights_threshold)
 
     # steering wheel
-    ret.steeringAngle = self.CS.angle_steers + float(kegman.conf['angle_steers_offset'])  # deg offset
+    ret.steeringAngle = self.CS.angle_steers # deg offset
     ret.steeringRate = self.CS.angle_steers_rate
 
     # gear shifter lever
