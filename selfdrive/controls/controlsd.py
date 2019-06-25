@@ -241,7 +241,8 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
 
   # Run angle offset learner at 20 Hz
   if rk.frame % 5 == 2:
-    angle_offset = learn_angle_offset(active, CS.vEgo, angle_offset,
+    last_angle_offset = angle_offset
+    angle_offset = learn_angle_offset(active, CS.vEgo, last_angle_offset,
                                       path_plan.cPoly, path_plan.cProb, CS.steeringAngle,
                                       CS.steeringPressed)
   try:
