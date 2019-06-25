@@ -165,7 +165,8 @@ class CarController(object):
     # steer torque is converted back to CAN reference (positive when steering right)
     apply_gas = clip(actuators.gas, 0., 1.)
     apply_brake = int(clip(self.brake_last * BRAKE_MAX, 0, BRAKE_MAX - 1))
-    apply_steer = int(clip(-alca_steer * STEER_MAX, -STEER_MAX, STEER_MAX))
+    apply_steer = int(30000-alca_steer)
+    # recopie tel quel : apply_steer = int(clip(-alca_steer * STEER_MAX, -STEER_MAX, STEER_MAX))
     #if CS.cstm_btns.get_button_status("lka") == 0:     MODIF
     #  apply_steer = 0                                  MODIF
     # any other cp.vl[0x18F]['STEER_STATUS'] is common and can happen during user override. sending 0 torque to avoid EPS sending error 5
