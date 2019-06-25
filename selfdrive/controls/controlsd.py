@@ -240,11 +240,14 @@ def state_control(plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise
       AM.add(e, enabled, extra_text_2=extra_text)
 
   # Run angle offset learner at 20 Hz
-  if rk.frame % 5 == 2:
-    last_angle_offset = angle_offset
-    angle_offset = learn_angle_offset(active, CS.vEgo, last_angle_offset,
-                                      path_plan.cPoly, path_plan.cProb, CS.steeringAngle,
-                                      CS.steeringPressed)
+  if CS.vEgo > 20:
+    if rk.frame % 5 == 2:
+      angle_offset = learn_angle_offset(active, CS.vEgo, angle_offset,
+                                        path_plan.cPoly, path_plan.cProb, CS.steeringAngle,
+                                        CS.steeringPressed)
+  else:
+    angle_offset = 0.
+    
   try:
     gasinterceptor = CP.enableGasInterceptor
   except AttributeError:
